@@ -161,9 +161,10 @@ void EXTI9_5_IRQHandler(void)
 	if(EXTI_GetITStatus(EXTI_Line5) != RESET) //确保是否产生了EXTI Line中断
 	{		
 		EXTI_ClearITPendingBit(EXTI_Line5);     //清除中断标志位		
-		/**do it***/								
+		/**do it***/				
 		if(TimingDelay > 960)   //960ms
 		{
+			//这个心跳数据有效，进行数据校准
 			timeArray[0] = TimingDelay;		
 			timeArray[1] = DelayUsTime;
 			
@@ -173,24 +174,15 @@ void EXTI9_5_IRQHandler(void)
 		}
 		else
 		{		
+			//心跳数据无效，丢弃 并且清空接收数组
 			updateBaseTime = 0;
 			timeArray[0] = 0;
 		}
 		TimingDelay = 0;		
 		DelayUsTime = 0;
 	}  
-	// exti6 A6 
-//	if(EXTI_GetITStatus(EXTI_Line6) != RESET) //确保是否产生了EXTI Line中断
-//	{
-//		/*******do it*******/
-//		PLT[PLTindex].time = NowTime;
-//		PLT[PLTindex].time.micros = (100000-NowTime.micros)/100000*TimingDelay + TimingDelay;
-//		PLT[PLTindex].index = PLTindex;
-//		PLTindex++;
-//		EXTI_ClearITPendingBit(EXTI_Line6);     //清除中断标志位		
-//	}
 }
-
+//用来实现ms定时
 void TIM2_IRQHandler(void)
 {
 	if ( TIM_GetITStatus(TIM2 , TIM_IT_Update) != RESET ) 
@@ -217,6 +209,7 @@ void USART1_IRQHandler()
 	} 
 }
 static int index = 0;
+//判断接下来的数据是不是GNZDA的数据
 int isGNZDA(u8 c)
 {	
 	switch(index)
@@ -278,6 +271,7 @@ int isGNZDA(u8 c)
 } 
 
 
+//解析字符串，获取时间数据
 void getNowTime()
 {	
 	NowTime.hour = (timeArrayforGps[0]-'0' )*10 + timeArrayforGps[1]-'0';
@@ -290,6 +284,7 @@ void getNowTime()
 	//printf("%d-%02d-%02d %02d:%02d:%02d\r\n",NowTime.year,NowTime.month,NowTime.day,NowTime.hour,NowTime.minute,NowTime.second);
 	
 }
+//将GPS传输的时间字符串保存在数组里面
 void beginSave(u8 c)
 {
 	if(c == ',')
