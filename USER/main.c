@@ -1,21 +1,17 @@
-
-#include "stm32f10x.h"
-#include "usrtConfig.h"
-#include "sysdelay.h"
-#include "exti.h"
-//#include "led.h"
-
+#include "main.h"
 /* 
  * 函数名：main
  * 描述  : 主函数
  * 输入  ：无
  * 输出  : 无
  */
-extern volatile u32 TimingDelay;
-extern int printFlag;
+extern struct nowTime NowTime;
+extern struct pliuTime PLT[20];
+extern int PLTindex;
 extern int timeArray[10];
-extern int i;
-extern u32 msTime ;
+extern volatile u32 TimingDelay; 
+extern int GPSBaseTime;
+extern float DelayUsTime;
 int main(void)
 {
 		/****usart1 init******/
@@ -31,44 +27,52 @@ int main(void)
 	  /*********/
 	  /***exit init******/
 		EXTI_PA5_Config();
+		//EXTI_PA6_Config();
 		/*********/
 	  /***led init****/
-		//LED_GPIO_Config();
-		//GPIO_Config();
+		LED_GPIO_Config();
+		GPIO_Config();
 	  /***************/
+		/* TIM2 定时配置 */
+		TIM2_NVIC_Configuration();
+    TIM2_Configuration();
+
+		/* TIM2 开始计时 */
+		START_TIME;
 		while(1)
 		{
-			//printf("this is stm32 usart\r\n");
-			//LED2( OFF );
-			//Delay_us(); //100us  延时
-			//LED2( ON );
 			// Delay_us(10);		
 			if(timeArray[0])
 			{
 				printf("%d\r\n",timeArray[0]);
+				printf("%d\r\n",timeArray[1]);
 				timeArray[0] = 0;				
 			}
-				
-			//printf("%d\r\n",i);	
-//			Delay_us(20);
-//			if(GPIO_ReadInputDataBit(GPIOC,GPIO_Pin_4))
-//			{									
-//				  //printf("wxc \r\n");
-//				
-//					timeArray[0] = TimingDelay;
-//					printf("us1 = %d\r\n",timeArray[0]);
-//					TimingDelay = 0;
-//					Delay_us(10000);				
-//			}
-//			if(i ==  10)
-//			{
-//				i = 0;
-//				printf("us1 = %d\r\n",timeArray[2]);
-//				printf("us2 = %d\r\n",timeArray[3]);
-//				printf("us3 = %d\r\n",timeArray[4]);
-//				printf("us4 = %d\r\n",timeArray[5]);
-//				printf("us5 = %d\r\n",timeArray[6]);
-//			}
+			Delay_us(10);
+			if(PLTindex >= 6)
+			{
+				while(PLTindex--)
+				{
+					printf("%d-%02d-%02d %02d:%02d:%02d.%03.02f  %d\r\n",PLT[PLTindex].time.year,PLT[PLTindex].time.month,PLT[PLTindex].time.day,PLT[PLTindex].time.hour,PLT[PLTindex].time.minute,PLT[PLTindex].time.second,PLT[PLTindex].time.micros,PLTindex);
+					//Delay_us(10);
+				}		
+			}	
+			if(GPIO_ReadInputDataBit(GPIOC,GPIO_Pin_4))
+			{													
+				PLT[PLTindex].time = NowTime;
+				if(GPSBaseTimeFlag)					
+				{
+					PLT[PLTindex].time.micros = (GPSBaseTime/100)%1000 + DelayUsTime/100;//(((100000-NowTime.micros)/100000)*TimingDelay + TimingDelay)/100;					
+				}
+				else
+				{
+					PLT[PLTindex].time.micros = (TimingDelay + GPSBaseTime)%1000 + DelayUsTime/100;
+				}
+				printf("delaytime = %d\r\n",GPSBaseTime);
+				PLT[PLTindex].index = PLTindex;
+				PLTindex++;				
+				Delay_us(100*140);
+			}
 			
 		}
 	  

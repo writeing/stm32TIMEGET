@@ -68,6 +68,36 @@ void EXTI_PA5_Config(void)
   EXTI_InitStructure.EXTI_LineCmd = ENABLE;
   EXTI_Init(&EXTI_InitStructure); 
 }
+/*
+ * 函数名：EXTI_PA6_Config
+ * 描述  ：配置 PA6 为线中断口，并设置中断优先级
+ * 输入  ：无
+ * 输出  ：无
+ * 调用  ：外部调用
+ */
+void EXTI_PA6_Config(void)
+{
+	GPIO_InitTypeDef GPIO_InitStructure; 
+	EXTI_InitTypeDef EXTI_InitStructure;
 
+	/* config the extiline(PE5) clock and AFIO clock */
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_AFIO,ENABLE);
+												
+	/* config the NVIC(PE5) */
+	NVIC_Configuration();
+
+	/* EXTI line gpio config(PE5) */	
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;       
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;	 // 上拉输入
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+	/* EXTI line(PE5) mode config */
+	GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource5); 
+  EXTI_InitStructure.EXTI_Line = EXTI_Line6;
+  EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+  EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising; //下降沿中断
+  EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+  EXTI_Init(&EXTI_InitStructure); 
+}
 /******************* (C) COPYRIGHT 2012 WildFire Team *****END OF FILE****/
 

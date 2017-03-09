@@ -419,6 +419,11 @@
               <FileType>1</FileType>
               <FilePath>.\usrtConfig.c</FilePath>
             </File>
+            <File>
+              <FileName>Tim.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Tim.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -453,6 +458,11 @@
               <FileName>stm32f10x_rtc.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\FWlib\src\stm32f10x_rtc.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_tim.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\FWlib\src\stm32f10x_tim.c</FilePath>
             </File>
           </Files>
         </Group>

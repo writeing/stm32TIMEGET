@@ -24,6 +24,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x_it.h"
 #include "usrtConfig.h"
+//#include "common.h"
 /** @addtogroup STM32F10x_StdPeriph_Template
   * @{
   */
@@ -133,39 +134,78 @@ void PendSV_Handler(void)
   * @retval None
   */
 extern void TimingDelay_Decrement(void );
-extern u32 TimingDelay;
-int timeArray[10];
-int i=0;
-int updateBaseTime = 0;
+
 void SysTick_Handler(void)
 {
 	TimingDelay_Decrement();
 }
 
+struct nowTime NowTime={0,0,0,0};
+
+struct pliuTime PLT[20];
+int PLTindex = 0;
+int timeArray[10];
+
+int updateBaseTime = 0;
+volatile u8 timeArrayforGps[50];
+static int timeIndex = 0;
+
+volatile u32 TimingDelay; 
+volatile int GPSBaseTime = 0;
+
+int GPSBaseTimeFlag = 0;
+extern float DelayUsTime;
 /* I/O线中断，中断线为PA5 */
 void EXTI9_5_IRQHandler(void)
 {
 	if(EXTI_GetITStatus(EXTI_Line5) != RESET) //确保是否产生了EXTI Line中断
 	{		
-		/**do it***/						
-		//printf("%d\r\n",TimingDelay);		
-		//printf("%d\r\n",timeArray[0]);
-		SysTick->CTRL &= ~ SysTick_CTRL_ENABLE_Msk;
-		if(TimingDelay > 96000)
+		EXTI_ClearITPendingBit(EXTI_Line5);     //清除中断标志位		
+		/**do it***/								
+		if(TimingDelay > 960)   //960ms
 		{
-			timeArray[0] = TimingDelay;			
+			timeArray[0] = TimingDelay;		
+			timeArray[1] = DelayUsTime;
+			
 			updateBaseTime = 1;
+			//NowTime.micros = TimingDelay;
+			GPSBaseTimeFlag = 0;
 		}
 		else
 		{		
+			updateBaseTime = 0;
 			timeArray[0] = 0;
 		}
-		TimingDelay = 0;				
-		EXTI_ClearITPendingBit(EXTI_Line5);     //清除中断标志位		
-		SysTick->CTRL |=  SysTick_CTRL_ENABLE_Msk;
+		TimingDelay = 0;		
+		DelayUsTime = 0;
 	}  
+	// exti6 A6 
+//	if(EXTI_GetITStatus(EXTI_Line6) != RESET) //确保是否产生了EXTI Line中断
+//	{
+//		/*******do it*******/
+//		PLT[PLTindex].time = NowTime;
+//		PLT[PLTindex].time.micros = (100000-NowTime.micros)/100000*TimingDelay + TimingDelay;
+//		PLT[PLTindex].index = PLTindex;
+//		PLTindex++;
+//		EXTI_ClearITPendingBit(EXTI_Line6);     //清除中断标志位		
+//	}
 }
 
+void TIM2_IRQHandler(void)
+{
+	if ( TIM_GetITStatus(TIM2 , TIM_IT_Update) != RESET ) 
+	{	
+			TIM_ClearITPendingBit(TIM2 , TIM_FLAG_Update);    
+
+			if(GPSBaseTimeFlag)
+			{
+				GPSBaseTime++;
+			}		
+			TimingDelay++;	
+			DelayUsTime = 0;
+			//GPIO_WriteBit(GPIOA,GPIO_Pin_7,(BitAction)(GPIO_ReadOutputDataBit(GPIOA,GPIO_Pin_7)?0:1));
+	}	
+}
 void USART1_IRQHandler()
 {
 	u8 c;
@@ -237,18 +277,7 @@ int isGNZDA(u8 c)
 	return 0;
 } 
 
-volatile u8 timeArrayforGps[50];
-static int timeIndex = 0;
-struct nowTime
-{
-	int year;
-	int month;
-	int day;
-	int hour;
-	int minute;
-	int second;
-	int micros;
-}NowTime;
+
 void getNowTime()
 {	
 	NowTime.hour = (timeArrayforGps[0]-'0' )*10 + timeArrayforGps[1]-'0';
@@ -258,7 +287,8 @@ void getNowTime()
 	NowTime.month = (timeArrayforGps[11]-'0' )*10 + timeArrayforGps[12]-'0';
 	NowTime.year = (timeArrayforGps[13]-'0' )*1000 + (timeArrayforGps[14]-'0') *100 + (timeArrayforGps[15]-'0') *10 + (timeArrayforGps[16]-'0');
 	
-	printf("%d-%02d-%02d %02d:%02d:%02d\r\n",NowTime.year,NowTime.month,NowTime.day,NowTime.hour,NowTime.minute,NowTime.second);
+	//printf("%d-%02d-%02d %02d:%02d:%02d\r\n",NowTime.year,NowTime.month,NowTime.day,NowTime.hour,NowTime.minute,NowTime.second);
+	
 }
 void beginSave(u8 c)
 {
@@ -290,7 +320,10 @@ void getGNZDAData(u8 c)
 			return;
 		}
 		if(beginRecon && isGNZDA(c))  //返回判断结果   
-		{			
+		{		
+			GPSBaseTime = 0;
+			GPSBaseTimeFlag = 1;
+			
 			flag = 1;					
 		}
 	}

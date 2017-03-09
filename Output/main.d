@@ -1,4 +1,5 @@
 ..\output\main.o: main.c
+..\output\main.o: main.h
 ..\output\main.o: ..\CMSIS\stm32f10x.h
 ..\output\main.o: ..\CMSIS\core_cm3.h
 ..\output\main.o: E:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
@@ -17,3 +18,5 @@
 ..\output\main.o: E:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
 ..\output\main.o: sysdelay.h
 ..\output\main.o: exti.h
+..\output\main.o: led.h
+..\output\main.o: Tim.h

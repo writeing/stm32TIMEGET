@@ -1,7 +1,8 @@
 #include "sysdelay.h"
 
-volatile u32 TimingDelay;
+
 volatile u32 delayTime;
+volatile float DelayUsTime;
 /*
  * 函数名：SysTick_Init
  * 描述  ：启动系统滴答定时器 SysTick
@@ -22,8 +23,8 @@ void SysTick_Init(void)
 		while (1);
 	}
 		// 关闭滴答定时器  
-	//SysTick->CTRL &= ~ SysTick_CTRL_ENABLE_Msk;
-	SysTick->CTRL |=  SysTick_CTRL_ENABLE_Msk;
+	 //SysTick->CTRL &= ~ SysTick_CTRL_ENABLE_Msk;
+		SysTick->CTRL |=  SysTick_CTRL_ENABLE_Msk;
 }
 
 
@@ -43,7 +44,7 @@ void Delay_us(__IO u32 nTime)
 	//SysTick->CTRL |=  SysTick_CTRL_ENABLE_Msk;
 
 	while(delayTime != 0);
-
+	//SysTick->CTRL &= ~ SysTick_CTRL_ENABLE_Msk;
 }
 
 
@@ -87,6 +88,6 @@ void TimingDelay_Decrement(void)
 	{ 
 		delayTime--;
 	}	
-	TimingDelay++;	
+		DelayUsTime ++;
 //	queryPlise++;
 }
