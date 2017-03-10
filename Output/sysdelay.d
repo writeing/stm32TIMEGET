@@ -5,8 +5,10 @@
 ..\output\sysdelay.o: E:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
 ..\output\sysdelay.o: ..\CMSIS\system_stm32f10x.h
 ..\output\sysdelay.o: ..\USER\stm32f10x_conf.h
-..\output\sysdelay.o: ..\FWlib\inc\stm32f10x_rcc.h
+..\output\sysdelay.o: ..\FWlib\inc\stm32f10x_bkp.h
 ..\output\sysdelay.o: ..\CMSIS\stm32f10x.h
+..\output\sysdelay.o: ..\FWlib\inc\stm32f10x_pwr.h
+..\output\sysdelay.o: ..\FWlib\inc\stm32f10x_rcc.h
 ..\output\sysdelay.o: ..\FWlib\inc\stm32f10x_flash.h
 ..\output\sysdelay.o: ..\FWlib\inc\stm32f10x_exti.h
 ..\output\sysdelay.o: ..\FWlib\inc\stm32f10x_gpio.h

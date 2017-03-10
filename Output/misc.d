@@ -5,8 +5,10 @@
 ..\output\misc.o: E:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
 ..\output\misc.o: ..\CMSIS\system_stm32f10x.h
 ..\output\misc.o: ..\USER\stm32f10x_conf.h
-..\output\misc.o: ..\FWlib\inc\stm32f10x_rcc.h
+..\output\misc.o: ..\FWlib\inc\stm32f10x_bkp.h
 ..\output\misc.o: ..\CMSIS\stm32f10x.h
+..\output\misc.o: ..\FWlib\inc\stm32f10x_pwr.h
+..\output\misc.o: ..\FWlib\inc\stm32f10x_rcc.h
 ..\output\misc.o: ..\FWlib\inc\stm32f10x_flash.h
 ..\output\misc.o: ..\FWlib\inc\stm32f10x_exti.h
 ..\output\misc.o: ..\FWlib\inc\stm32f10x_gpio.h

@@ -45,6 +45,17 @@ void DebugMon_Handler(void);
 void PendSV_Handler(void);
 void SysTick_Handler(void);
 
+	 
+	 
+extern struct tm NowTime;
+extern struct pliuTime PLT[20];
+extern int PLTindex;
+extern int timeArray[10];
+extern volatile u32 TimingDelay; 
+extern volatile int GPSBaseTime;
+extern float DelayUsTime;	 
+	 
+	 
 #ifdef __cplusplus
 }
 #endif

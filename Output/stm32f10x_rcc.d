@@ -5,9 +5,11 @@
 ..\output\stm32f10x_rcc.o: E:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
 ..\output\stm32f10x_rcc.o: ..\CMSIS\system_stm32f10x.h
 ..\output\stm32f10x_rcc.o: ..\USER\stm32f10x_conf.h
+..\output\stm32f10x_rcc.o: ..\FWlib\inc\stm32f10x_bkp.h
+..\output\stm32f10x_rcc.o: ..\CMSIS\stm32f10x.h
+..\output\stm32f10x_rcc.o: ..\FWlib\inc\stm32f10x_pwr.h
 ..\output\stm32f10x_rcc.o: ..\FWlib\inc\stm32f10x_rcc.h
 ..\output\stm32f10x_rcc.o: ..\FWlib\inc\stm32f10x_flash.h
-..\output\stm32f10x_rcc.o: ..\CMSIS\stm32f10x.h
 ..\output\stm32f10x_rcc.o: ..\FWlib\inc\stm32f10x_exti.h
 ..\output\stm32f10x_rcc.o: ..\FWlib\inc\stm32f10x_gpio.h
 ..\output\stm32f10x_rcc.o: ..\FWlib\inc\stm32f10x_rtc.h

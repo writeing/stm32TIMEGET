@@ -88,6 +88,6 @@ void TimingDelay_Decrement(void)
 	{ 
 		delayTime--;
 	}	
-		DelayUsTime ++;
+		DelayUsTime ++;		
 //	queryPlise++;
 }

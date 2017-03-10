@@ -24,6 +24,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x_it.h"
 #include "usrtConfig.h"
+#include "time.h"
 //#include "common.h"
 /** @addtogroup STM32F10x_StdPeriph_Template
   * @{
@@ -140,7 +141,7 @@ void SysTick_Handler(void)
 	TimingDelay_Decrement();
 }
 
-struct nowTime NowTime={0,0,0,0};
+struct tm NowTime;
 
 struct pliuTime PLT[20];
 int PLTindex = 0;
@@ -155,6 +156,8 @@ volatile int GPSBaseTime = 0;
 
 int GPSBaseTimeFlag = 0;
 extern float DelayUsTime;
+
+extern u8 RTCEnableFlag ;
 /* I/O线中断，中断线为PA5 */
 void EXTI9_5_IRQHandler(void)
 {
@@ -164,13 +167,14 @@ void EXTI9_5_IRQHandler(void)
 		/**do it***/				
 		if(TimingDelay > 960)   //960ms
 		{
-			//这个心跳数据有效，进行数据校准
+			//这个心跳数据有效，进行数据校准 
 			timeArray[0] = TimingDelay;		
-			timeArray[1] = DelayUsTime;
-			
+			timeArray[1] = DelayUsTime;			
 			updateBaseTime = 1;
 			//NowTime.micros = TimingDelay;
-			GPSBaseTimeFlag = 0;
+			GPSBaseTimeFlag = 0;			
+			RTCEnableFlag = 0;	
+			Time_Adjust(NowTime);
 		}
 		else
 		{		
@@ -178,8 +182,11 @@ void EXTI9_5_IRQHandler(void)
 			updateBaseTime = 0;
 			timeArray[0] = 0;
 		}
+		if(RTCEnableFlag)
+			RTC_DISABLE();
 		TimingDelay = 0;		
 		DelayUsTime = 0;
+
 	}  
 }
 //用来实现ms定时
@@ -191,10 +198,21 @@ void TIM2_IRQHandler(void)
 
 			if(GPSBaseTimeFlag)
 			{
+				// usart data come and pps don't  timer 
 				GPSBaseTime++;
-			}		
+			}
 			TimingDelay++;	
-			DelayUsTime = 0;
+			DelayUsTime = 0;//每次进入 清空us计时器  
+			if(TimingDelay > 1010)	
+			{				
+				//如果ms高于1000 之后 开始启用RTC时钟
+				Time_Adjust(NowTime);				//先设置基准时间
+				Time_GetValue(RTC_GetCounter()+1);				//再把数据取出来，+1s
+				Time_Adjust(getTMforRTC());
+				RTC_ENABLE();				//使能RTC中断
+				RTCEnableFlag = 1;	
+				GPSBaseTimeFlag = 0;	//关闭时间补差，
+			}
 			//GPIO_WriteBit(GPIOA,GPIO_Pin_7,(BitAction)(GPIO_ReadOutputDataBit(GPIOA,GPIO_Pin_7)?0:1));
 	}	
 }
@@ -274,13 +292,12 @@ int isGNZDA(u8 c)
 //解析字符串，获取时间数据
 void getNowTime()
 {	
-	NowTime.hour = (timeArrayforGps[0]-'0' )*10 + timeArrayforGps[1]-'0';
-	NowTime.minute = (timeArrayforGps[2]-'0' )*10 + timeArrayforGps[3]-'0';
-	NowTime.second = (timeArrayforGps[4]-'0' )*10 + timeArrayforGps[5]-'0';
-	NowTime.day = (timeArrayforGps[9]-'0') *10 + timeArrayforGps[10]-'0';
-	NowTime.month = (timeArrayforGps[11]-'0' )*10 + timeArrayforGps[12]-'0';
-	NowTime.year = (timeArrayforGps[13]-'0' )*1000 + (timeArrayforGps[14]-'0') *100 + (timeArrayforGps[15]-'0') *10 + (timeArrayforGps[16]-'0');
-	
+	NowTime.tm_hour = (timeArrayforGps[0]-'0' )*10 + timeArrayforGps[1]-'0';
+	NowTime.tm_min = (timeArrayforGps[2]-'0' )*10 + timeArrayforGps[3]-'0';
+	NowTime.tm_sec = (timeArrayforGps[4]-'0' )*10 + timeArrayforGps[5]-'0';
+	NowTime.tm_mday = (timeArrayforGps[9]-'0') *10 + timeArrayforGps[10]-'0';
+	NowTime.tm_mon = (timeArrayforGps[11]-'0' )*10 + timeArrayforGps[12]-'0';
+	NowTime.tm_year = (timeArrayforGps[13]-'0' )*1000 + (timeArrayforGps[14]-'0') *100 + (timeArrayforGps[15]-'0') *10 + (timeArrayforGps[16]-'0') - 1900;
 	//printf("%d-%02d-%02d %02d:%02d:%02d\r\n",NowTime.year,NowTime.month,NowTime.day,NowTime.hour,NowTime.minute,NowTime.second);
 	
 }
@@ -297,12 +314,12 @@ void getGNZDAData(u8 c)
 	static int flag = 0;
 	static int beginRecon = 0;
 	if(c == '\r' && flag == 1)			//结束了
-		{
-			beginRecon = 0;
-			flag = 0;
-			getNowTime();			
-			timeIndex = 0;				
-		}
+	{
+		beginRecon = 0;
+		flag = 0;
+		getNowTime();			
+		timeIndex = 0;				
+	}
 	if(flag)    // 判断是GPZDA数据
 	{
 		beginSave(c);
@@ -317,8 +334,7 @@ void getGNZDAData(u8 c)
 		if(beginRecon && isGNZDA(c))  //返回判断结果   
 		{		
 			GPSBaseTime = 0;
-			GPSBaseTimeFlag = 1;
-			
+			GPSBaseTimeFlag = 1;			
 			flag = 1;					
 		}
 	}
@@ -344,7 +360,25 @@ void USART2_IRQHandler()
 			
 	} 
 }
+//extern void CaculateTime(void);
 
+void RTC_IRQHandler(void)
+{	
+	if(RTC_GetFlagStatus(RTC_IT_SEC) != RESET)
+		{  				
+				TimingDelay = 0;		
+				DelayUsTime = 0;
+//				uint32_t TempValue;
+        Time_GetValue(RTC_GetCounter());  
+//				TempValue=RTC_GetCounter();
+//				do
+//				{
+//					 //CaculateTime();
+//					 TempValue -=0x00015180;
+//				}while(TempValue > 0x00015180);				
+		}
+  RTC_ClearITPendingBit(RTC_IT_SEC);  
+}
 /******************************************************************************/
 /*                 STM32F10x Peripherals Interrupt Handlers                   */
 /*  Add here the Interrupt Handler for the used peripheral(s) (PPP), for the  */

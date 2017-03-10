@@ -1,5 +1,5 @@
 #include "usrtConfig.h"
-#include "misc.h"
+//#include "misc.h"
 /*
  * 函数名：USART1_Config
  * 描述  ：USART1 GPIO 配置,工作模式配置

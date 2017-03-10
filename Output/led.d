@@ -5,8 +5,10 @@
 ..\output\led.o: E:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
 ..\output\led.o: ..\CMSIS\system_stm32f10x.h
 ..\output\led.o: ..\USER\stm32f10x_conf.h
-..\output\led.o: ..\FWlib\inc\stm32f10x_rcc.h
+..\output\led.o: ..\FWlib\inc\stm32f10x_bkp.h
 ..\output\led.o: ..\CMSIS\stm32f10x.h
+..\output\led.o: ..\FWlib\inc\stm32f10x_pwr.h
+..\output\led.o: ..\FWlib\inc\stm32f10x_rcc.h
 ..\output\led.o: ..\FWlib\inc\stm32f10x_flash.h
 ..\output\led.o: ..\FWlib\inc\stm32f10x_exti.h
 ..\output\led.o: ..\FWlib\inc\stm32f10x_gpio.h

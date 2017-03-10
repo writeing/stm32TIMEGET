@@ -12,16 +12,11 @@ content:add TIM2 get ms time add systick get us time
  * 输入  ：无
  * 输出  : 无
  */
-extern struct nowTime NowTime;
-extern struct pliuTime PLT[20];
-extern int PLTindex;
-extern int timeArray[10];
-extern volatile u32 TimingDelay; 
-extern int GPSBaseTime;
-extern float DelayUsTime;
+
 int main(void)
 {
 		int i=0;
+		char buff[50];
 		/****usart1 init******/
 		USART1_Config();
 		NVIC_Configuration();
@@ -47,12 +42,16 @@ int main(void)
 
 		/* TIM2 开始计时 */
 		START_TIME;
+		
+		/***RTC******/
+		RTC_Configuration();
+		/*************/
 		while(1)
 		{
 			// Delay_us(10);		
 			if(timeArray[0])
 			{
-				//printf("%d\r\n",timeArray[0]);
+				printf("%d\r\n",timeArray[0]);
 				//printf("%d\r\n",timeArray[1]);
 				timeArray[0] = 0;				
 			}
@@ -62,28 +61,43 @@ int main(void)
 				while(PLTindex)
 				{
 					PLTindex--;
-					printf("%d-%02d-%02d %02d:%02d:%02d.%03.02f  %d\r\n",PLT[PLTindex].time.year,PLT[PLTindex].time.month,PLT[PLTindex].time.day,PLT[PLTindex].time.hour,PLT[PLTindex].time.minute,PLT[PLTindex].time.second,PLT[PLTindex].time.micros,PLTindex);
+					strftime(buff,sizeof(buff),"%Y-%m-%d %H:%M:%S",&PLT[PLTindex].time);					
+					printf("%s.%06.2f\r\n",buff,PLT[PLTindex].micros);
+					//printf( "%s.%06.2f\r\n", asctime( &PLT[PLTindex].time ),micros);
+					//printf("%d-%02d-%02d %02d:%02d:%02d.%06.2f  %d\r\n",PLT[PLTindex].time.tm_year,PLT[PLTindex].time.month,PLT[PLTindex].time.day,PLT[PLTindex].time.hour,PLT[PLTindex].time.minute,PLT[PLTindex].time.second,PLT[PLTindex].time.micros,PLTindex);
 					//Delay_us(10);
 				}		
-			}	
+			}
 			if(GPIO_ReadInputDataBit(GPIOC,GPIO_Pin_4))
 			{		
-				//是高电平
-				PLT[PLTindex].time = NowTime;
-				if(GPSBaseTimeFlag)					
+				//高电平							
+				if(RTCEnableFlag)
 				{
-					//PPS脉冲还没有到					
-					PLT[PLTindex].time.micros = (GPSBaseTime/100)%1000 + DelayUsTime/100;//(((100000-NowTime.micros)/100000)*TimingDelay + TimingDelay)/100;					
+					//RTC enable . PPS break						
+					PLT[PLTindex].time = getTMforRTC();
+					PLT[PLTindex].micros= TimingDelay%1000 + DelayUsTime/100;
 				}
 				else
 				{
-					//PPS脉冲已经到来
-					PLT[PLTindex].time.micros = (TimingDelay + GPSBaseTime)%1000 + DelayUsTime/100;
-				}
-				
+						PLT[PLTindex].time = NowTime;
+						//RTC disable 。pps connect
+						if(GPSBaseTimeFlag)					
+						{
+							//PPS脉冲还没有到					
+							//PLT[PLTindex].time. 
+							PLT[PLTindex].micros= (GPSBaseTime/100)%1000 + DelayUsTime/100;//(((100000-NowTime.micros)/100000)*TimingDelay + TimingDelay)/100;					
+						}
+						else
+						{
+							//PPS脉冲已经到来
+							//PLT[PLTindex].time.
+							PLT[PLTindex].micros = (TimingDelay + GPSBaseTime)%1000 + DelayUsTime/100;
+						}
+				}				
+				printf("%d\r\n",i++);	
 				PLT[PLTindex].index = PLTindex;
 				PLTindex++;				
-				printf("%d\r\n",i++);				
+				
 				while(1)
 				{		
 					//等待IO口为低电平
