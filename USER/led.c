@@ -28,7 +28,7 @@ void LED_GPIO_Config(void)
   	GPIO_Init(GPIOC, &GPIO_InitStructure);		  
 
 	/* πÿ±’À˘”–ledµ∆	*/
-	GPIO_ResetBits(GPIOC, GPIO_Pin_4 );	 //| GPIO_Pin_4 | GPIO_Pin_5
+	//GPIO_ResetBits(GPIOC, GPIO_Pin_4 );	 //| GPIO_Pin_4 | GPIO_Pin_5
 	
 }
 

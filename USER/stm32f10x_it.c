@@ -165,8 +165,8 @@ void EXTI9_5_IRQHandler(void)
 	{		
 		EXTI_ClearITPendingBit(EXTI_Line5);     //清除中断标志位		
 		/**do it***/				
-		if(TimingDelay > 960)   //960ms
-		{
+//		if(TimingDelay > 960)   //960ms
+//		{
 			//这个心跳数据有效，进行数据校准 
 			timeArray[0] = TimingDelay;		
 			timeArray[1] = DelayUsTime;			
@@ -175,19 +175,52 @@ void EXTI9_5_IRQHandler(void)
 			GPSBaseTimeFlag = 0;			
 			RTCEnableFlag = 0;	
 			Time_Adjust(NowTime);
-		}
-		else
-		{		
-			//心跳数据无效，丢弃 并且清空接收数组
-			updateBaseTime = 0;
-			timeArray[0] = 0;
-		}
+//		}
+//		else
+//		{		
+//			//心跳数据无效，丢弃 并且清空接收数组
+//			updateBaseTime = 0;
+//			timeArray[0] = 0;
+//		}
 		if(RTCEnableFlag)
 			RTC_DISABLE();
 		TimingDelay = 0;		
 		DelayUsTime = 0;
 
-	}  
+	} 
+//	if(EXTI_GetITStatus(EXTI_Line6) != RESET) //确保是否产生了EXTI Line中断
+//	{	
+//		EXTI_ClearITPendingBit(EXTI_Line6);     //清除中断标志位		
+//		//高电平							
+//		if(RTCEnableFlag)
+//		{
+//			//RTC enable . PPS break						
+//			PLT[PLTindex].time = getTMforRTC();
+//			PLT[PLTindex].micros= TimingDelay%1000 + DelayUsTime/100;
+//		}
+//		else
+//		{
+//				PLT[PLTindex].time = NowTime;
+//				//RTC disable 。pps connect
+//				if(GPSBaseTimeFlag)					
+//				{
+//					//PPS脉冲还没有到					
+//					//PLT[PLTindex].time. 
+//					PLT[PLTindex].micros= (GPSBaseTime/100)%1000 + DelayUsTime/100;//(((100000-NowTime.micros)/100000)*TimingDelay + TimingDelay)/100;					
+//				}
+//				else
+//				{
+//					//PPS脉冲已经到来
+//					//PLT[PLTindex].time.
+//					PLT[PLTindex].micros = (TimingDelay + GPSBaseTime)%1000 + DelayUsTime/100;
+//				}
+//		}				
+//		
+//		PLT[PLTindex].index = PLTindex;
+//		PLTindex++;				
+//		//Delay_us(100*2);
+//		//while(GPIO_ReadInputDataBit(GPIOC,GPIO_Pin_4));
+//	}		
 }
 //用来实现ms定时
 void TIM2_IRQHandler(void)

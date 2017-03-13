@@ -64,7 +64,7 @@ void EXTI_PA5_Config(void)
 	GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource5); 
   EXTI_InitStructure.EXTI_Line = EXTI_Line5;
   EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
-  EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling; //下降沿中断
+  EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising; //下降沿中断
   EXTI_InitStructure.EXTI_LineCmd = ENABLE;
   EXTI_Init(&EXTI_InitStructure); 
 }
