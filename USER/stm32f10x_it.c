@@ -142,9 +142,8 @@ void SysTick_Handler(void)
 }
 
 struct tm NowTime;
-
-struct pliuTime PLT[20];
-int PLTindex = 0;
+struct pliuTime PLT[PLTARRAY];
+int PLTindex = 1;
 int timeArray[10];
 
 int updateBaseTime = 0;
@@ -155,9 +154,10 @@ volatile u32 TimingDelay;
 volatile int GPSBaseTime = 0;
 
 int GPSBaseTimeFlag = 0;
-extern float DelayUsTime;
+//extern float DelayUsTime;
 
 extern u8 RTCEnableFlag ;
+int getGPIOPin = 0;
 /* I/O线中断，中断线为PA5 */
 void EXTI9_5_IRQHandler(void)
 {
@@ -245,17 +245,42 @@ void TIM2_IRQHandler(void)
 				RTC_ENABLE();				//使能RTC中断
 				RTCEnableFlag = 1;	
 				GPSBaseTimeFlag = 0;	//关闭时间补差，
-			}
+			}			
+
 			//GPIO_WriteBit(GPIOA,GPIO_Pin_7,(BitAction)(GPIO_ReadOutputDataBit(GPIOA,GPIO_Pin_7)?0:1));
 	}	
 }
+#include "string.h"
 void USART1_IRQHandler()
 {
-	u8 c;
+	static u8 c[20];
+	static int index = 0;
+	char buff[50];
 	if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
 	{ 	
-	    c=USART1->DR;
-	  	printf("%c",c);    //将接受到的数据直接返回打印
+	    c[index] = USART1->DR;
+			if(c[index-1] == '\r' && c[index] == '\n')
+			{
+				if(!strcmp((char *)c,"at+print\r\n"))
+				{
+					index = 0;
+					//printf("%s\r\n",c);    //将接受到的数据直接返回打印
+					memset((char *)c,'\0',sizeof(c));
+//				
+					Readflash();
+					for(int i =0;i < PLTindex ;i++)
+					{
+						strftime(buff,sizeof(buff),"%Y-%m-%d %H:%M:%S",&PLT[i].time);					
+						printf("%s.%06.2f\r\n",buff,PLT[i].micros);
+					}
+				}
+			}
+			else
+			{
+				index++;
+			}
+			
+	  	
 			
 	} 
 }

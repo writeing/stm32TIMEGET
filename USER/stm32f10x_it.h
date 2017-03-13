@@ -35,6 +35,8 @@
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
 
+#define PLTARRAY   33	 
+	 
 void NMI_Handler(void);
 void HardFault_Handler(void);
 void MemManage_Handler(void);
@@ -48,12 +50,12 @@ void SysTick_Handler(void);
 	 
 	 
 extern struct tm NowTime;
-extern struct pliuTime PLT[20];
+extern struct pliuTime PLT[PLTARRAY];
 extern int PLTindex;
 extern int timeArray[10];
 extern volatile u32 TimingDelay; 
 extern volatile int GPSBaseTime;
-extern float DelayUsTime;	 
+//extern float DelayUsTime;	 
 	 
 	 
 #ifdef __cplusplus

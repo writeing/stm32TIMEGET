@@ -55,20 +55,48 @@ void Delay_us(__IO u32 nTime)
  * 输出  ：无
  * 调用  ：在 SysTick 中断函数 SysTick_Handler()调用
  */ 
-//volatile u32 queryPlise = 0;
+volatile u32 queryPlise = 0;
+int getGPIOflag = 1;
 //u32 msTime = 0;
-//void quePlise()
-//{
-//		if(GPIO_ReadInputDataBit(GPIOC,GPIO_Pin_4))
-//		{		
-//				Delay_us(20);				
-//				msTime = TimingDelay;  
-//				TimingDelay = 0;						
-//				//while(GPIO_ReadInputDataBit(GPIOC,GPIO_Pin_4));
-//				//printf("wxc \r\n");													
-//		}
-//		queryPlise = 0;
-//}
+void quePlise()
+{		
+	if(!GPIO_ReadInputDataBit(GPIOC,GPIO_Pin_4))
+	{		
+		//低电平								
+		getGPIOflag = 0;		//frobid get the GPIO
+		if(RTCEnableFlag)
+		{
+			//RTC enable . PPS break						
+			PLT[PLTindex].time = getTMforRTC();
+			PLT[PLTindex].micros= TimingDelay%1000 + DelayUsTime/100;
+		}
+		else
+		{	
+			//RTC disable 。pps connect					
+			PLT[PLTindex].time = NowTime;
+		
+			if(GPSBaseTimeFlag)					
+			{
+				//PPS脉冲还没有到					
+				//PLT[PLTindex].time. 
+				PLT[PLTindex].micros= (GPSBaseTime/100)%1000 + DelayUsTime/100;//(((100000-NowTime.micros)/100000)*TimingDelay + TimingDelay)/100;					
+			}
+			else
+			{
+				//PPS脉冲已经到来
+				//PLT[PLTindex].time.
+				PLT[PLTindex].micros = (TimingDelay + GPSBaseTime)%1000 + DelayUsTime/100;
+			}
+		}				
+		
+		PLT[PLTindex].index = PLTindex;
+		PLTindex++;	
+		PLTindex %= PLTARRAY;
+		while(!GPIO_ReadInputDataBit(GPIOC,GPIO_Pin_4));
+	}			
+	queryPlise = 30;
+	getGPIOflag = 1;			// enable get GPIO
+}
 void TimingDelay_Decrement(void)
 {
 	/*if (TimingDelay != 0x00)
@@ -80,14 +108,15 @@ void TimingDelay_Decrement(void)
 		SysTick->CTRL &= ~ SysTick_CTRL_ENABLE_Msk;
 	}
 	*/
-//	if(queryPlise == 10 )
-//	{
-//		quePlise();
-//	}
+	if(queryPlise < 10 )
+	{
+		quePlise();
+	}
 	if (delayTime != 0x00)
 	{ 
 		delayTime--;
 	}	
-		DelayUsTime ++;		
-//	queryPlise++;
+	DelayUsTime ++;		
+	if(getGPIOflag)
+		queryPlise--;
 }

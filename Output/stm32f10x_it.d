@@ -20,9 +20,12 @@
 ..\output\stm32f10x_it.o: usrtConfig.h
 ..\output\stm32f10x_it.o: E:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
 ..\output\stm32f10x_it.o: sysdelay.h
+..\output\stm32f10x_it.o: stm32f10x_it.h
 ..\output\stm32f10x_it.o: exti.h
 ..\output\stm32f10x_it.o: led.h
 ..\output\stm32f10x_it.o: Tim.h
 ..\output\stm32f10x_it.o: RTC.h
 ..\output\stm32f10x_it.o: E:\keil5\ARM\ARMCC\Bin\..\include\time.h
-..\output\stm32f10x_it.o: stm32f10x_it.h
+..\output\stm32f10x_it.o: flash.h
+..\output\stm32f10x_it.o: main.h
+..\output\stm32f10x_it.o: E:\keil5\ARM\ARMCC\Bin\..\include\string.h

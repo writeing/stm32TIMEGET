@@ -57,7 +57,7 @@ void EXTI_PA5_Config(void)
 
 	/* EXTI line gpio config(PE5) */	
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;       
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;	 // 上拉输入
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;	 // 上拉输入
   GPIO_Init(GPIOA, &GPIO_InitStructure);
 
 	/* EXTI line(PE5) mode config */

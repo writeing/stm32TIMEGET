@@ -3,7 +3,18 @@ auth:wxc
 date:2017.03.09
 content:add TIM2 get ms time add systick get us time
         使用轮询法查询外部脉冲，但是脉冲不规范，采用延时法防抖
-				在中断函数里面实时获取时间，然后在main函数里面计算和打印，				
+				在中断函数里面实时获取时间，然后在main函数里面计算和打印，			
+
+auth:wxc
+date:2017.03.10
+content:add RTC get time on PPS is break
+
+auth:wxc
+date:2017.03.13
+content:add flash save data 
+				for startadress save data each 32*7*4 byte 
+				and save value count cal data numble
+
 *******/
 #include "main.h"
 /* 
@@ -12,11 +23,13 @@ content:add TIM2 get ms time add systick get us time
  * 输入  ：无
  * 输出  : 无
  */
-
+//struct pliuTime savePIL[500] __attribute__((at(0x080004020)));// flashCount __attribute__ ((at(0x08037000)));
+//int savePltindex __attribute__((at(0x08010000)));//((section("NO_INIT"),zero_init));
 int main(void)
 {
-		//int i=0;
-		char buff[50];
+//		static int i=0;
+//		char buff[50];
+
 		/****usart1 init******/
 		USART1_Config();
 		NVIC_Configuration();
@@ -25,31 +38,32 @@ int main(void)
 		USART2_Config();
 		NVIC_Configuration2();
 		/********/
-		/****sys init*****/
-		SysTick_Init();
-	  /*********/
-	  /***exit init******/
-		EXTI_PA5_Config();
-		EXTI_PA6_Config();
-		/*********/
-	  /***led init****/
-		LED_GPIO_Config();
-		//GPIO_Config();
-	  /***************/
+		/***RTC******/
+		RTC_Configuration();
+		/*************/
 		/* TIM2 定时配置 */
 		TIM2_NVIC_Configuration();
     TIM2_Configuration();
 
 		/* TIM2 开始计时 */
-		START_TIME;
-		
-		/***RTC******/
-		RTC_Configuration();
-		/*************/
+		START_TIME;			  
+	  /***led init****/
+		LED_GPIO_Config();
+		//GPIO_Config();
+	  /***************/
+		/****sys init*****/
+		SysTick_Init();
+	  /*********/
+		/***exit init******/
+		EXTI_PA5_Config();
+		EXTI_PA6_Config();
+		/*********/		
+		readFlashInit();
 		while(1)
 		{
-			// Delay_us(10);		
-			//printf("wxc\r\n");
+			// Delay_us(10);				
+			//printf("%d\r\n",savePltindex);
+			//savePltindex ++;
 			if(timeArray[0])
 			{
 				printf("%d\r\n",timeArray[0]);
@@ -57,63 +71,26 @@ int main(void)
 				timeArray[0] = 0;				
 			}
 			Delay_us(10);
-			while(PLTindex)
-			{
-				PLTindex--;
-				strftime(buff,sizeof(buff),"%Y-%m-%d %H:%M:%S",&PLT[PLTindex].time);					
-				printf("%s.%06.2f\r\n",buff,PLT[PLTindex].micros);
-				//printf( "%s.%06.2f\r\n", asctime( &PLT[PLTindex].time ),micros);
-				//printf("%d-%02d-%02d %02d:%02d:%02d.%06.2f  %d\r\n",PLT[PLTindex].time.tm_year,PLT[PLTindex].time.month,PLT[PLTindex].time.day,PLT[PLTindex].time.hour,PLT[PLTindex].time.minute,PLT[PLTindex].time.second,PLT[PLTindex].time.micros,PLTindex);
-				Delay_us(10);
-			}		
-			if(!GPIO_ReadInputDataBit(GPIOC,GPIO_Pin_4))
+//			while(!(i == (PLTindex-1)))
+//			{
+//				i++;
+//				i = i%PLTARRAY;
+//				strftime(buff,sizeof(buff),"%Y-%m-%d %H:%M:%S",&PLT[i].time);					
+//				printf("%s.%06.2f\r\n",buff,PLT[i].micros);
+//				
+//				//*(savePIL+i) = PLT[i];//[savePltindex++]
+//			}		
+			if(PLTindex == 32)
 			{		
-				//高电平							
-				if(RTCEnableFlag)
-				{
-					//RTC enable . PPS break						
-					PLT[PLTindex].time = getTMforRTC();
-					PLT[PLTindex].micros= TimingDelay%1000 + DelayUsTime/100;
-				}
-				else
-				{
-						PLT[PLTindex].time = NowTime;
-						//RTC disable 。pps connect
-						if(GPSBaseTimeFlag)					
-						{
-							//PPS脉冲还没有到					
-							//PLT[PLTindex].time. 
-							PLT[PLTindex].micros= (GPSBaseTime/100)%1000 + DelayUsTime/100;//(((100000-NowTime.micros)/100000)*TimingDelay + TimingDelay)/100;					
-						}
-						else
-						{
-							//PPS脉冲已经到来
-							//PLT[PLTindex].time.
-							PLT[PLTindex].micros = (TimingDelay + GPSBaseTime)%1000 + DelayUsTime/100;
-						}
-				}				
-				
-				PLT[PLTindex].index = PLTindex;
-				PLTindex++;				
-				//Delay_us(100*20);
-				//while(GPIO_ReadInputDataBit(GPIOC,GPIO_Pin_4));
-				//printf("%d\r\n",i++);	
-//				while(1)
-//				{		
-//					//等待IO口为低电平
-//					
-//					{
-//						//Delay_us(100*50);	//50ms
-//						//延时之后，还是低电平
-//						if(GPIO_ReadInputDataBit(GPIOC,GPIO_Pin_4)==0)
-//							break;
-//					}
-//				}
-			}
-			
+				printf("wxc\r\n");
+				Writeflash(PLT);
+//				memcpy(savePIL,PLT,sizeof(PLT));
+				memset(PLT,0,sizeof(PLT));
+				PLTindex = 0;
+//				i = 0;
+//				Writeflash(savePIL);
+			}			
 		}
 	  
 }
 /******************* (C) COPYRIGHT 2012 WildFire Team *****END OF FILE************/
-
-

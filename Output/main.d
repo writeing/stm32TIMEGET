@@ -19,10 +19,12 @@
 ..\output\main.o: ..\FWlib\inc\misc.h
 ..\output\main.o: E:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
 ..\output\main.o: sysdelay.h
+..\output\main.o: stm32f10x_it.h
+..\output\main.o: main.h
 ..\output\main.o: exti.h
 ..\output\main.o: led.h
 ..\output\main.o: Tim.h
 ..\output\main.o: RTC.h
 ..\output\main.o: E:\keil5\ARM\ARMCC\Bin\..\include\time.h
-..\output\main.o: stm32f10x_it.h
-..\output\main.o: main.h
+..\output\main.o: flash.h
+..\output\main.o: E:\keil5\ARM\ARMCC\Bin\..\include\string.h

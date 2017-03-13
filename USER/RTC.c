@@ -114,14 +114,14 @@ void RTC_Configuration(void)
     RCC_RTCCLKConfig(RCC_RTCCLKSource_LSE);  
     RCC_RTCCLKCmd(ENABLE);  
   
-    RTC_WaitForSynchro();  
-    RTC_WaitForLastTask();  
+    RTC_WaitForSynchro();     
   
   	RTC_ITConfig(RTC_IT_SEC,ENABLE);  
 		RTC_WaitForLastTask();
   
     RTC_SetPrescaler(32767);  
     RTC_WaitForLastTask();  
+		
 		NVIC_Configuration();
 } 
 
