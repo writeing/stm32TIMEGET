@@ -1,35 +1,17 @@
 #ifndef __COMMON_H_
 #define __COMMON_H_
-
+#include "usrtConfig.h"
 #include "stm32f10x.h"
-/*
-struct nowTime
-{
-	int year;
-	int month;
-	int day;
-	int hour;
-	int minute;
-	int second;
-	float micros;
-}NowTime;
+#include "time.h"
+#define PLTARRAY   33	 
+#define SAVECOUNT   32
 struct pliuTime
 {
-	struct nowTime time;	
+	struct tm time;	
 	//struct pliuTime *next;
 	int index;
-}PLT[20];
-int PLTindex = 0;
+	float micros;
+};
 
-
-int timeArray[10];
-int i=0;
-int updateBaseTime = 0;
-volatile u8 timeArrayforGps[50];
-static int timeIndex = 0;
-
-volatile u32 TimingDelay;
-volatile u32 delayTime;
-*/
 #endif /*common*/
 

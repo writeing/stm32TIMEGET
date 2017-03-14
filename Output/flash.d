@@ -16,16 +16,7 @@
 ..\output\flash.o: ..\FWlib\inc\stm32f10x_tim.h
 ..\output\flash.o: ..\FWlib\inc\stm32f10x_usart.h
 ..\output\flash.o: ..\FWlib\inc\misc.h
-..\output\flash.o: main.h
+..\output\flash.o: common.h
 ..\output\flash.o: usrtConfig.h
 ..\output\flash.o: E:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
-..\output\flash.o: sysdelay.h
-..\output\flash.o: stm32f10x_it.h
-..\output\flash.o: main.h
-..\output\flash.o: exti.h
-..\output\flash.o: led.h
-..\output\flash.o: Tim.h
-..\output\flash.o: RTC.h
 ..\output\flash.o: E:\keil5\ARM\ARMCC\Bin\..\include\time.h
-..\output\flash.o: flash.h
-..\output\flash.o: E:\keil5\ARM\ARMCC\Bin\..\include\string.h

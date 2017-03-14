@@ -15,6 +15,9 @@ content:add flash save data
 				for startadress save data each 32*7*4 byte 
 				and save value count cal data numble
 
+auth:wxc
+date:2017.03.14
+content:add common.h head file save common value
 *******/
 #include "main.h"
 /* 
@@ -23,7 +26,7 @@ content:add flash save data
  * 输入  ：无
  * 输出  : 无
  */
-//struct pliuTime savePIL[500] __attribute__((at(0x080004020)));// flashCount __attribute__ ((at(0x08037000)));
+//struct pliuTime savePIL[500] __attribute__((at(0x08040000)));// flashCount __attribute__ ((at(0x08037000)));
 //int savePltindex __attribute__((at(0x08010000)));//((section("NO_INIT"),zero_init));
 int main(void)
 {
@@ -61,34 +64,17 @@ int main(void)
 		readFlashInit();
 		while(1)
 		{
-			// Delay_us(10);				
-			//printf("%d\r\n",savePltindex);
-			//savePltindex ++;
 			if(timeArray[0])
-			{
+			{				
 				printf("%d\r\n",timeArray[0]);
-				//printf("%d\r\n",timeArray[1]);
 				timeArray[0] = 0;				
 			}
-			Delay_us(10);
-//			while(!(i == (PLTindex-1)))
-//			{
-//				i++;
-//				i = i%PLTARRAY;
-//				strftime(buff,sizeof(buff),"%Y-%m-%d %H:%M:%S",&PLT[i].time);					
-//				printf("%s.%06.2f\r\n",buff,PLT[i].micros);
-//				
-//				//*(savePIL+i) = PLT[i];//[savePltindex++]
-//			}		
-			if(PLTindex == 32)
+			Delay_us(10);	
+			if(PLTindex == SAVECOUNT)
 			{		
-				printf("wxc\r\n");
 				Writeflash(PLT);
-//				memcpy(savePIL,PLT,sizeof(PLT));
 				memset(PLT,0,sizeof(PLT));
 				PLTindex = 0;
-//				i = 0;
-//				Writeflash(savePIL);
 			}			
 		}
 	  

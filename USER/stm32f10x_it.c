@@ -23,8 +23,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x_it.h"
-#include "usrtConfig.h"
-#include "time.h"
+
 //#include "common.h"
 /** @addtogroup STM32F10x_StdPeriph_Template
   * @{
@@ -134,30 +133,32 @@ void PendSV_Handler(void)
   * @param  None
   * @retval None
   */
-extern void TimingDelay_Decrement(void );
+//extern void TimingDelay_Decrement(void );
 
 void SysTick_Handler(void)
 {
 	TimingDelay_Decrement();
 }
-
+//**************************//
 struct tm NowTime;
 struct pliuTime PLT[PLTARRAY];
 int PLTindex = 1;
 int timeArray[10];
+//**************************//
 
+//**************************//
 int updateBaseTime = 0;
 volatile u8 timeArrayforGps[50];
 static int timeIndex = 0;
-
+//**************************//
 volatile u32 TimingDelay; 
 volatile int GPSBaseTime = 0;
-
+//**************************//
 int GPSBaseTimeFlag = 0;
-//extern float DelayUsTime;
 
-extern u8 RTCEnableFlag ;
+//**************************//
 int getGPIOPin = 0;
+//**************************//
 /* I/O线中断，中断线为PA5 */
 void EXTI9_5_IRQHandler(void)
 {
@@ -165,23 +166,12 @@ void EXTI9_5_IRQHandler(void)
 	{		
 		EXTI_ClearITPendingBit(EXTI_Line5);     //清除中断标志位		
 		/**do it***/				
-//		if(TimingDelay > 960)   //960ms
-//		{
-			//这个心跳数据有效，进行数据校准 
-			timeArray[0] = TimingDelay;		
-			timeArray[1] = DelayUsTime;			
-			updateBaseTime = 1;
-			//NowTime.micros = TimingDelay;
-			GPSBaseTimeFlag = 0;			
-			RTCEnableFlag = 0;	
-			Time_Adjust(NowTime);
-//		}
-//		else
-//		{		
-//			//心跳数据无效，丢弃 并且清空接收数组
-//			updateBaseTime = 0;
-//			timeArray[0] = 0;
-//		}
+		timeArray[0] = TimingDelay;		
+		timeArray[1] = DelayUsTime;			
+		updateBaseTime = 1;		
+		GPSBaseTimeFlag = 0;			
+		RTCEnableFlag = 0;	
+		Time_Adjust(NowTime);
 		if(RTCEnableFlag)
 			RTC_DISABLE();
 		TimingDelay = 0;		
@@ -247,10 +237,10 @@ void TIM2_IRQHandler(void)
 				GPSBaseTimeFlag = 0;	//关闭时间补差，
 			}			
 
-			//GPIO_WriteBit(GPIOA,GPIO_Pin_7,(BitAction)(GPIO_ReadOutputDataBit(GPIOA,GPIO_Pin_7)?0:1));
+			//GPIO_WriteBit(GPIOA,GPIO_Pin_7,(BitAction)(1 - GPIO_ReadOutputDataBit(GPIOA,GPIO_Pin_7)));
 	}	
 }
-#include "string.h"
+
 void USART1_IRQHandler()
 {
 	static u8 c[20];
@@ -404,21 +394,10 @@ void USART2_IRQHandler()
 	{ 	
 	    c = USART2->DR;
 			//printf("%c",c);
-			getGNZDAData(c);
-			//printf("%c",c);
-			/*if(c[0] == '\r')
-			{
-				i++;				
-			}
-			if(c[0] == '\r' && c[1] == '\n')
-			{
-				printf("xwxc\n");   
-				i = 0;
-			}*/
+			getGNZDAData(c);			
 			
 	} 
 }
-//extern void CaculateTime(void);
 
 void RTC_IRQHandler(void)
 {	

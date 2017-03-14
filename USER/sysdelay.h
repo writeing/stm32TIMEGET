@@ -8,4 +8,7 @@ void Delay_us(__IO u32 nTime);
 
 extern int GPSBaseTimeFlag;
 extern volatile float DelayUsTime;
+
+
+void TimingDelay_Decrement(void);
 #endif /* __SYSDELAY_H_ */

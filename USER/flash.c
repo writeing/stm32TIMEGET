@@ -23,7 +23,7 @@ void Readflash()
 	struct tm time;	
 	int mirc = 0;	
 	int j=0;
-	for(int i=0; i< 32 ;i++)
+	for(int i=0; i< SAVECOUNT ;i++)
 	{						
 		p = (uint32_t*)(ReadAddress+j*4);
 		time.tm_year = *p;
@@ -47,7 +47,7 @@ void Readflash()
 		mirc = *p;		
 		j++;
 		printTime(mirc,time);
-		if(j == 32)
+		if(j == SAVECOUNT)
 		{
 			ReadAddress+=400;
 			j=0;
@@ -81,7 +81,7 @@ void Writeflash(struct pliuTime *data)
 	{
 		int i=0;
 		int j=0;
-		for(j =0 ; j < 32 ; j++)
+		for(j =0 ; j < SAVECOUNT ; j++)
 		{			
 			FLASHStatus = FLASH_ProgramWord(StartAddress+i*4, data[j].time.tm_year);			
 			i++;

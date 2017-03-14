@@ -29,13 +29,18 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x.h"
-#include "main.h"
+#include "flash.h"
+#include "common.h"
+#include "string.h"
+#include "usrtConfig.h"
+#include "RTC.h"
+#include "sysdelay.h"
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
 
-#define PLTARRAY   33	 
+
 	 
 void NMI_Handler(void);
 void HardFault_Handler(void);
@@ -55,6 +60,7 @@ extern int PLTindex;
 extern int timeArray[10];
 extern volatile u32 TimingDelay; 
 extern volatile int GPSBaseTime;
+//extern u8 RTCEnableFlag;
 //extern float DelayUsTime;	 
 	 
 	 
