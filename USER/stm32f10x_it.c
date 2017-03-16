@@ -168,6 +168,7 @@ void EXTI9_5_IRQHandler(void)
 		/**do it***/		
 		if(updateBaseTime == 0)
 		{			
+			NowTime.tm_sec++;
 			Time_Adjust(NowTime);
 		}		
 		updateBaseTime = 1;				

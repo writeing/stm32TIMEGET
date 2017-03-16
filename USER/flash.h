@@ -3,9 +3,12 @@
 #include "stm32f10x.h"
 //#include "main.h"
 #include "common.h"
+
+#define STARTADDRESS    0x08010000
 void Writeflash(struct pliuTime *data);
 void Readflash(void);
 void readFlashInit(void );
 extern int count;
 extern uint32_t StartAddress;
+
 #endif  /*__FLASH_H_*/

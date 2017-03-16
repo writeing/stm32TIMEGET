@@ -3,8 +3,8 @@
 #include "usrtConfig.h"
 #include "stm32f10x.h"
 #include "time.h"
-#define PLTARRAY   40	 
-#define SAVECOUNT   32
+#define PLTARRAY   140 
+#define SAVECOUNT   120
 struct pliuTime
 {
 	struct tm time;	

@@ -1,6 +1,7 @@
 #include "flash.h"
-uint32_t StartAddress = 0x08037000;
-uint32_t countAddress = 0x08036000;
+
+uint32_t StartAddress = STARTADDRESS;
+uint32_t countAddress = STARTADDRESS - 0x800;
 volatile FLASH_Status FLASHStatus = FLASH_COMPLETE;
 int count = 0;
 void readFlashInit()
@@ -22,8 +23,9 @@ void printTime(int mirc,struct tm time)
 void Readflash()
 {
 //	uint32_t data;
-	uint32_t *p;
-	uint32_t ReadAddress = 0x08037000;
+	uint16_t *p;
+	uint32_t *pMirc;
+	uint32_t ReadAddress = STARTADDRESS;
 	struct tm time;	
 	int mirc = 0;	
 	int j=0;
@@ -34,26 +36,27 @@ void Readflash()
 		printf("i = %d\r\n",i);
 		for(int i=0; i< SAVECOUNT ;i++)
 		{						
-			p = (uint32_t*)(ReadAddress+j*4);
-			time.tm_year = *p;
+			p = (uint16_t*)(ReadAddress+j*2);
+			time.tm_year = (uint32_t)*p;
 			j++;
-			p = (uint32_t*)(ReadAddress+j*4);
-			time.tm_mon = *p;
+			p = (uint16_t*)(ReadAddress+j*2);
+			time.tm_mon = (uint32_t)*p;
 			j++;
-			p = (uint32_t*)(ReadAddress+j*4);
-			time.tm_mday = *p;
+			p = (uint16_t*)(ReadAddress+j*2);
+			time.tm_mday = (uint32_t)*p;
 			j++;
-			p = (uint32_t*)(ReadAddress+j*4);
-			time.tm_hour = *p;
+			p = (uint16_t*)(ReadAddress+j*2);
+			time.tm_hour = (uint32_t)*p;
 			j++;
-			p = (uint32_t*)(ReadAddress+j*4);
-			time.tm_min = *p;
+			p = (uint16_t*)(ReadAddress+j*2);
+			time.tm_min = (uint32_t)*p;
 			j++;
-			p = (uint32_t*)(ReadAddress+j*4);
-			time.tm_sec = *p;
+			p = (uint16_t*)(ReadAddress+j*2);
+			time.tm_sec = (uint32_t)*p;
 			j++;
-			p = (uint32_t*)(ReadAddress+j*4);
-			mirc = *p;		
+			pMirc = (uint32_t*)(ReadAddress+j*2);
+			mirc = (uint32_t)*pMirc;		
+			j++;
 			j++;
 			printTime(mirc,time);
 		}
@@ -91,23 +94,24 @@ void Writeflash(struct pliuTime *data)
 		int j=0;		
 		for(j =1 ; j <= SAVECOUNT ; j++)
 		{			
-			FLASHStatus = FLASH_ProgramWord(StartAddress+i*4, data[j].time.tm_year);			
+			FLASHStatus = FLASH_ProgramHalfWord(StartAddress+i*2, (uint16_t)(data[j].time.tm_year));			
 			i++;
-			FLASHStatus = FLASH_ProgramWord(StartAddress+i*4, data[j].time.tm_mon);			
+			FLASHStatus = FLASH_ProgramHalfWord(StartAddress+i*2, (uint16_t)(data[j].time.tm_mon));			
 			i++;
-			FLASHStatus = FLASH_ProgramWord(StartAddress+i*4, data[j].time.tm_mday);			
+			FLASHStatus = FLASH_ProgramHalfWord(StartAddress+i*2, (uint16_t)(data[j].time.tm_mday));			
 			i++;
-			FLASHStatus = FLASH_ProgramWord(StartAddress+i*4, data[j].time.tm_hour);			
+			FLASHStatus = FLASH_ProgramHalfWord(StartAddress+i*2, (uint16_t)(data[j].time.tm_hour));			
 			i++;
-			FLASHStatus = FLASH_ProgramWord(StartAddress+i*4, data[j].time.tm_min);			
+			FLASHStatus = FLASH_ProgramHalfWord(StartAddress+i*2, (uint16_t)(data[j].time.tm_min));			
 			i++;
-			FLASHStatus = FLASH_ProgramWord(StartAddress+i*4, data[j].time.tm_sec);			
+			FLASHStatus = FLASH_ProgramHalfWord(StartAddress+i*2, (uint16_t)(data[j].time.tm_sec));			
 			i++;
-			FLASHStatus = FLASH_ProgramWord(StartAddress+i*4, data[j].micros*100);			
+			FLASHStatus = FLASH_ProgramWord(StartAddress+i*2, data[j].micros*100);			
+			i++;
 			i++;
 		}	
 		count += 1;
-		printf("wxc count = %d\r\n",count);
+		printf("count = %d\r\n",count);
 		StartAddress += 0x800;
 //		FLASHStatus = FLASH_ProgramWord(StartAddress+4, data[1]);
 //		FLASHStatus = FLASH_ProgramWord(StartAddress+8, data[2]);
