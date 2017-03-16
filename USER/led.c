@@ -53,6 +53,6 @@ void GPIO_Config(void)
   	GPIO_Init(GPIOA, &GPIO_InitStructure);		  
 
 	/* πÿ±’À˘”–ledµ∆	*/
-	GPIO_SetBits(GPIOA, GPIO_Pin_7 );	 //| GPIO_Pin_4 | GPIO_Pin_5
+	//GPIO_SetBits(GPIOA, GPIO_Pin_7 );	 //| GPIO_Pin_4 | GPIO_Pin_5
 }
 /******************* (C) COPYRIGHT 2012 WildFire Team *****END OF FILE************/

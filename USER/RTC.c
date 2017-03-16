@@ -17,6 +17,9 @@ void Time_Adjust(struct tm data)
 //    when.tm_wday= 0;
 //    when.tm_isdst= 0;
 	now = mktime(&data);
+	IRTHour = data.tm_hour;
+	IRTMinute = data.tm_min;
+	IRTSecond = data.tm_sec;
 	IRTYear = data.tm_year;
 	IRTMonth = data.tm_mon;
 	IRTDay = data.tm_mday;
@@ -27,14 +30,25 @@ void Time_Adjust(struct tm data)
 //  RTC_SetCounter(0xfffffff0);
   /* Wait until last write operation on RTC registers has finished */
   RTC_WaitForLastTask();   
-
-	RTC_ITConfig(RTC_IT_SEC,DISABLE);	//¹Ø±Õ¶¨Ê±Æ÷  
-	
-	RTC_WaitForLastTask();
 }
 
 //u8 IRTYear,IRTMonth,IRTDay,IRTHour,IRTMinute,IRTSecond;
 struct tm getTMforRTC()
+{
+	uint32_t TempValue;
+	struct tm *TempRTCTimeTM;
+	TempValue =RTC_GetCounter(); 
+	TempRTCTimeTM = localtime(&TempValue);
+	RTCTimeTM = *TempRTCTimeTM;
+//	RTCTimeTM.tm_year = IRTYear;
+//	RTCTimeTM.tm_mon = IRTMonth;
+//	RTCTimeTM.tm_mday = IRTDay;
+//	RTCTimeTM.tm_hour = IRTHour;
+//	RTCTimeTM.tm_min = IRTMinute;
+//	RTCTimeTM.tm_sec = IRTSecond;
+	return RTCTimeTM;
+}
+struct tm getTimeValuePPS()
 {
 	RTCTimeTM.tm_year = IRTYear;
 	RTCTimeTM.tm_mon = IRTMonth;
@@ -123,10 +137,11 @@ void RTC_Configuration(void)
     RTC_WaitForLastTask();  
 		
 		NVIC_Configuration();
+		RTC_DISABLE();
 } 
 
 
-//const u8 MaxDayArray[12]={31,28,31,30,31,30,31,31,30,31,30,31}; //
+const u8 MaxDayArray[12]={31,28,31,30,31,30,31,31,30,31,30,31}; //
 
 
 void Time_GetValue(u32 TimeVar) 
@@ -143,12 +158,32 @@ void Time_GetValue(u32 TimeVar)
   IRTSecond=(u8)TSS;
 }
 //Time_GetValue(RTC_GetCounter());
-
+void Time_sysValue()
+{
+	//u8 IRTYear,IRTMonth,IRTDay,IRTHour,IRTMinute,IRTSecond;
+	IRTSecond++;
+	if(IRTSecond == 60)
+	{
+		IRTMinute++;
+		IRTSecond = 0;
+		if(IRTMinute == 60)
+		{
+			IRTHour++;
+			IRTMinute = 0;
+			if(IRTHour == 24)
+			{
+				IRTHour = 0;		
+				CaculateTime();
+			}
+		}
+	}
+}
 /*CaculateTime :Caculate new Time*/
-/*void CaculateTime(void)
+void CaculateTime(void)
 {
     u32 IYear;
-    IYear=2000+IRTYear;
+    //IYear=2000+IRTYear;
+		IYear=IRTYear;
     if(2==IRTMonth) { //
         IRTDay++;
         if((IYear%4==0&&IYear%100!=0)||(IYear%400==0)) { //leap year
@@ -197,7 +232,7 @@ void Time_GetValue(u32 TimeVar)
             }        
         }
     }
-}*/
+}
 //TempValue=RTC_GetCounter();
 //do while(TempValue > 0x00015180);
 //{

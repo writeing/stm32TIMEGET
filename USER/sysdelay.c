@@ -73,19 +73,20 @@ void quePlise()
 		else
 		{	
 			//RTC disable 。pps connect					
-			PLT[PLTindex].time = NowTime;
-			if(GPSBaseTimeFlag)					
-			{
-				//PPS脉冲还没有到					
-				//PLT[PLTindex].time. 
-				PLT[PLTindex].micros= (GPSBaseTime/100)%1000 + DelayUsTime/100;//(((100000-NowTime.micros)/100000)*TimingDelay + TimingDelay)/100;					
-			}
-			else
-			{
-				//PPS脉冲已经到来
-				//PLT[PLTindex].time.
-				PLT[PLTindex].micros = (TimingDelay + GPSBaseTime)%1000 + DelayUsTime/100;
-			}
+			PLT[PLTindex].time = getTimeValuePPS();
+			PLT[PLTindex].micros= (TimingDelay)%1000 + DelayUsTime/100;
+//			if(GPSBaseTimeFlag)					
+//			{
+//				//PPS脉冲还没有到					
+//				//PLT[PLTindex].time. 
+//				PLT[PLTindex].micros= (GPSBaseTime/100)%1000 + DelayUsTime/100;//(((100000-NowTime.micros)/100000)*TimingDelay + TimingDelay)/100;					
+//			}
+//			else
+//			{
+//				//PPS脉冲已经到来
+//				//PLT[PLTindex].time.
+//				PLT[PLTindex].micros = (TimingDelay + GPSBaseTime)%1000 + DelayUsTime/100;
+//			}
 		}						
 		PLT[PLTindex].index = PLTindex;
 		PLTindex++;	

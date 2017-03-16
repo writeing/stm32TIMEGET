@@ -52,7 +52,7 @@ int main(void)
 		START_TIME;			  
 	  /***led init****/
 		LED_GPIO_Config();
-		//GPIO_Config();
+		GPIO_Config();
 	  /***************/
 		/****sys init*****/
 		SysTick_Init();
@@ -62,30 +62,31 @@ int main(void)
 		EXTI_PA6_Config();
 		/*********/		
 		readFlashInit();
-//		char buff[50]={0};
+		char buff[50]={0};
+		int index = 0;
 		while(1)
 		{
-//			if(timeArray[0])
-//			{									
-//				printf("%d\r\n",timeArray[0]);
-//				timeArray[0] = 0;				
-//			} 			
-//			while(PLTindex-1)
-//			{
-//				PLTindex--;//%R %T
-//				printf("%d\r\n",PLT[PLTindex].time.tm_mon);
-//				strftime(buff,sizeof(buff),"%F %T",&PLT[PLTindex].time);//%Y-%m-%d %H:%M:%S
-//				//printf("%4d-%02d-%02d %02d:%02d:%02d",PLT[PLTindex].time.tm_year+1900,PLT[PLTindex].time.tm_mon,PLT[PLTindex].time.tm_mday,PLT[PLTindex].time.tm_hour,PLT[PLTindex].time.tm_min,PLT[PLTindex].time.tm_sec);				
-//				printf("%s.%06.2f\r\n",buff,PLT[PLTindex].micros);
-//			}
-			Delay_us(10);	
-			if(PLTindex == SAVECOUNT+1)
-			{		
-				printf("%d\r\n",timeArray[0]);
-				Writeflash(PLT);
-				memset(PLT,0,sizeof(PLT));
-				PLTindex = 1;
-			}			
+			if(timeArray[0])
+			{													
+				//printf("%d.%d\r\n",timeArray[0],timeArray[1]);
+				printf("%d.%d\r\n",getTimeValuePPS().tm_sec,TimingDelay);
+				timeArray[0] = 0;				
+			} 	
+//			index = PLTindex;	
+			while(PLTindex-1)
+			{
+				PLTindex--;//%R %T
+				strftime(buff,sizeof(buff),"%F %T",&PLT[PLTindex].time);//%Y-%m-%d %H:%M:%S
+				//printf("%4d-%02d-%02d %02d:%02d:%02d",PLT[PLTindex].time.tm_year+1900,PLT[PLTindex].time.tm_mon,PLT[PLTindex].time.tm_mday,PLT[PLTindex].time.tm_hour,PLT[PLTindex].time.tm_min,PLT[PLTindex].time.tm_sec);				
+				printf("%s.%06.2f\r\n",buff,PLT[PLTindex].micros);
+			}
+//			Delay_us(10);	
+//			if(PLTindex == SAVECOUNT+1)
+//			{		
+//				Writeflash(PLT);
+//				memset(PLT,0,sizeof(PLT));
+//				PLTindex = 1;
+//			}			
 		}
 	  
 }

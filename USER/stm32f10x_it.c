@@ -165,18 +165,24 @@ void EXTI9_5_IRQHandler(void)
 	if(EXTI_GetITStatus(EXTI_Line5) != RESET) //确保是否产生了EXTI Line中断
 	{		
 		EXTI_ClearITPendingBit(EXTI_Line5);     //清除中断标志位		
-		/**do it***/				
+		/**do it***/		
+		if(updateBaseTime == 0)
+		{			
+			Time_Adjust(NowTime);
+		}		
+		updateBaseTime = 1;				
 		timeArray[0] = TimingDelay;		
-		timeArray[1] = DelayUsTime;			
-		updateBaseTime = 1;		
-		GPSBaseTimeFlag = 0;			
-		RTCEnableFlag = 0;	
-		Time_Adjust(NowTime);
+		timeArray[1] = DelayUsTime;					
+		//GPSBaseTimeFlag = 0;			
+		Time_sysValue();
+		//Time_Adjust(NowTime);
 		if(RTCEnableFlag)
+		{
 			RTC_DISABLE();
-		TimingDelay = 0;		
-		DelayUsTime = 0;
-		
+			RTCEnableFlag = 0;
+		}
+		TimingDelay = 0;
+		DelayUsTime = 0;				
 	} 
 //	if(EXTI_GetITStatus(EXTI_Line6) != RESET) //确保是否产生了EXTI Line中断
 //	{	
@@ -219,11 +225,11 @@ void TIM2_IRQHandler(void)
 	{	
 			TIM_ClearITPendingBit(TIM2 , TIM_FLAG_Update);    
 
-			if(GPSBaseTimeFlag)
-			{
-				// usart data come and pps don't  timer 
-				GPSBaseTime++;
-			}
+//			if(GPSBaseTimeFlag)
+//			{
+//				// usart data come and pps don't  timer 
+//				GPSBaseTime++;
+//			}
 			TimingDelay++;	
 			DelayUsTime = 0;//每次进入 清空us计时器  
 			if(TimingDelay > 1010)	
@@ -234,13 +240,14 @@ void TIM2_IRQHandler(void)
 				Time_Adjust(getTMforRTC());
 				RTC_ENABLE();				//使能RTC中断
 				RTCEnableFlag = 1;	
-				GPSBaseTimeFlag = 0;	//关闭时间补差，
+//				GPSBaseTimeFlag = 0;	//关闭时间补差，
+				updateBaseTime = 0;  //PPS时间无效
 			}			
 
 			//GPIO_WriteBit(GPIOA,GPIO_Pin_7,(BitAction)(1 - GPIO_ReadOutputDataBit(GPIOA,GPIO_Pin_7)));
 	}	
 }
-
+//接受串口发送数据
 void USART1_IRQHandler()
 {
 	static u8 c[20];
@@ -356,6 +363,7 @@ void getNowTime()
 	NowTime.tm_mday = (timeArrayforGps[9]-'0') *10 + timeArrayforGps[10]-'0';
 	NowTime.tm_mon = ((timeArrayforGps[11]-'0' )*10 + timeArrayforGps[12]-'0')-1;
 	NowTime.tm_year = (timeArrayforGps[13]-'0' )*1000 + (timeArrayforGps[14]-'0') *100 + (timeArrayforGps[15]-'0') *10 + (timeArrayforGps[16]-'0') - 1900;
+	//GPIO_WriteBit(GPIOA,GPIO_Pin_7,(BitAction)0);
 	//printf("%d-%02d-%02d %02d:%02d:%02d\r\n",NowTime.tm_year,NowTime.tm_mon,NowTime.tm_mday,NowTime.tm_hour,NowTime.tm_min,NowTime.tm_sec);
 	
 }
@@ -391,8 +399,8 @@ void getGNZDAData(u8 c)
 		}
 		if(beginRecon && isGNZDA(c))  //返回判断结果   
 		{		
-			GPSBaseTime = 0;
-			GPSBaseTimeFlag = 1;			
+//			GPSBaseTime = 0;
+//			GPSBaseTimeFlag = 1;			
 			flag = 1;					
 		}
 	}
@@ -415,14 +423,15 @@ void RTC_IRQHandler(void)
 		{  				
 				TimingDelay = 0;		
 				DelayUsTime = 0;
-//				uint32_t TempValue;
-        Time_GetValue(RTC_GetCounter());  
-//				TempValue=RTC_GetCounter();
-//				do
+				//uint32_t TempValue;
+        //Time_GetValue(RTC_GetCounter());  
+				//TempValue=RTC_GetCounter();
+				//localtime(TempValue);
+//				do while(TempValue > 0x00015180);
 //				{
-//					 //CaculateTime();
+//					 CaculateTime();
 //					 TempValue -=0x00015180;
-//				}while(TempValue > 0x00015180);				
+//				}				
 		}
   RTC_ClearITPendingBit(RTC_IT_SEC);  
 }
