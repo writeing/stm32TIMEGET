@@ -7,5 +7,5 @@ void Writeflash(struct pliuTime *data);
 void Readflash(void);
 void readFlashInit(void );
 extern int count;
-
+extern uint32_t StartAddress;
 #endif  /*__FLASH_H_*/

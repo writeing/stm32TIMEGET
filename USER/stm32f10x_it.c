@@ -176,7 +176,7 @@ void EXTI9_5_IRQHandler(void)
 			RTC_DISABLE();
 		TimingDelay = 0;		
 		DelayUsTime = 0;
-
+		
 	} 
 //	if(EXTI_GetITStatus(EXTI_Line6) != RESET) //确保是否产生了EXTI Line中断
 //	{	
@@ -254,15 +254,25 @@ void USART1_IRQHandler()
 				if(!strcmp((char *)c,"at+print\r\n"))
 				{
 					index = 0;
-					//printf("%s\r\n",c);    //将接受到的数据直接返回打印
-					memset((char *)c,'\0',sizeof(c));
-//				
+//					printf("%s\r\n",c);    //将接受到的数据直接返回打印
+					memset((char *)c,'\0',sizeof(c));				
 					Readflash();
-					for(int i =0;i < PLTindex ;i++)
+					for(int i = 1;i < PLTindex ;i++)
 					{
-						strftime(buff,sizeof(buff),"%Y-%m-%d %H:%M:%S",&PLT[i].time);					
+						strftime(buff,sizeof(buff),"wxc:%Y-%m-%d %H:%M:%S",&PLT[i].time);					
 						printf("%s.%06.2f\r\n",buff,PLT[i].micros);
 					}
+
+				}
+				else if(!strcmp((char *)c,"at+erase\r\n"))
+				{
+					index = 0;
+					memset((char *)c,'\0',sizeof(c));	
+					
+					count = 0;
+					StartAddress = 0x08037000;
+					memset(PLT,0,sizeof(PLT));
+					PLTindex = 1;
 				}
 			}
 			else
@@ -344,9 +354,9 @@ void getNowTime()
 	NowTime.tm_min = (timeArrayforGps[2]-'0' )*10 + timeArrayforGps[3]-'0';
 	NowTime.tm_sec = (timeArrayforGps[4]-'0' )*10 + timeArrayforGps[5]-'0';
 	NowTime.tm_mday = (timeArrayforGps[9]-'0') *10 + timeArrayforGps[10]-'0';
-	NowTime.tm_mon = (timeArrayforGps[11]-'0' )*10 + timeArrayforGps[12]-'0';
+	NowTime.tm_mon = ((timeArrayforGps[11]-'0' )*10 + timeArrayforGps[12]-'0')-1;
 	NowTime.tm_year = (timeArrayforGps[13]-'0' )*1000 + (timeArrayforGps[14]-'0') *100 + (timeArrayforGps[15]-'0') *10 + (timeArrayforGps[16]-'0') - 1900;
-	//printf("%d-%02d-%02d %02d:%02d:%02d\r\n",NowTime.year,NowTime.month,NowTime.day,NowTime.hour,NowTime.minute,NowTime.second);
+	//printf("%d-%02d-%02d %02d:%02d:%02d\r\n",NowTime.tm_year,NowTime.tm_mon,NowTime.tm_mday,NowTime.tm_hour,NowTime.tm_min,NowTime.tm_sec);
 	
 }
 //将GPS传输的时间字符串保存在数组里面

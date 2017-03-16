@@ -74,7 +74,6 @@ void quePlise()
 		{	
 			//RTC disable 。pps connect					
 			PLT[PLTindex].time = NowTime;
-		
 			if(GPSBaseTimeFlag)					
 			{
 				//PPS脉冲还没有到					
@@ -87,8 +86,7 @@ void quePlise()
 				//PLT[PLTindex].time.
 				PLT[PLTindex].micros = (TimingDelay + GPSBaseTime)%1000 + DelayUsTime/100;
 			}
-		}				
-		
+		}						
 		PLT[PLTindex].index = PLTindex;
 		PLTindex++;	
 		PLTindex %= PLTARRAY;

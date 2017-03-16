@@ -26,8 +26,8 @@ content:add common.h head file save common value
  * 输入  ：无
  * 输出  : 无
  */
-//struct pliuTime savePIL[500] __attribute__((at(0x08040000)));// flashCount __attribute__ ((at(0x08037000)));
-//int savePltindex __attribute__((at(0x08010000)));//((section("NO_INIT"),zero_init));
+//struct pliuTime savePIL[20] __attribute__((at(0x08050000)));// flashCount __attribute__ ((at(0x08037000)));
+//int savePltindex[20] __attribute__((at(0x08040000))) = {1,2,3,4,5,6,7,8,9,0};//((section("NO_INIT"),zero_init));
 int main(void)
 {
 //		static int i=0;
@@ -62,19 +62,29 @@ int main(void)
 		EXTI_PA6_Config();
 		/*********/		
 		readFlashInit();
+//		char buff[50]={0};
 		while(1)
 		{
-			if(timeArray[0])
-			{				
-				printf("%d\r\n",timeArray[0]);
-				timeArray[0] = 0;				
-			}
+//			if(timeArray[0])
+//			{									
+//				printf("%d\r\n",timeArray[0]);
+//				timeArray[0] = 0;				
+//			} 			
+//			while(PLTindex-1)
+//			{
+//				PLTindex--;//%R %T
+//				printf("%d\r\n",PLT[PLTindex].time.tm_mon);
+//				strftime(buff,sizeof(buff),"%F %T",&PLT[PLTindex].time);//%Y-%m-%d %H:%M:%S
+//				//printf("%4d-%02d-%02d %02d:%02d:%02d",PLT[PLTindex].time.tm_year+1900,PLT[PLTindex].time.tm_mon,PLT[PLTindex].time.tm_mday,PLT[PLTindex].time.tm_hour,PLT[PLTindex].time.tm_min,PLT[PLTindex].time.tm_sec);				
+//				printf("%s.%06.2f\r\n",buff,PLT[PLTindex].micros);
+//			}
 			Delay_us(10);	
-			if(PLTindex == SAVECOUNT)
+			if(PLTindex == SAVECOUNT+1)
 			{		
+				printf("%d\r\n",timeArray[0]);
 				Writeflash(PLT);
 				memset(PLT,0,sizeof(PLT));
-				PLTindex = 0;
+				PLTindex = 1;
 			}			
 		}
 	  
