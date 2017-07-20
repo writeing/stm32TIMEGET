@@ -6,8 +6,9 @@
 ..\output\main.o: E:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
 ..\output\main.o: ..\CMSIS\system_stm32f10x.h
 ..\output\main.o: ..\USER\stm32f10x_conf.h
-..\output\main.o: ..\FWlib\inc\stm32f10x_bkp.h
+..\output\main.o: ..\FWlib\inc\stm32f10x_sdio.h
 ..\output\main.o: ..\CMSIS\stm32f10x.h
+..\output\main.o: ..\FWlib\inc\stm32f10x_bkp.h
 ..\output\main.o: ..\FWlib\inc\stm32f10x_pwr.h
 ..\output\main.o: ..\FWlib\inc\stm32f10x_rcc.h
 ..\output\main.o: ..\FWlib\inc\stm32f10x_flash.h
@@ -26,6 +27,14 @@
 ..\output\main.o: E:\keil5\ARM\ARMCC\Bin\..\include\string.h
 ..\output\main.o: RTC.h
 ..\output\main.o: sysdelay.h
+..\output\main.o: .\Utilities\STM32_EVAL\Common\stm32_eval_sdio_sd.h
+..\output\main.o: .\Utilities\STM32_EVAL\stm32_eval.h
+..\output\main.o: .\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.h
+..\output\main.o: .\Utilities\STM32_EVAL\stm32_eval.h
 ..\output\main.o: exti.h
 ..\output\main.o: led.h
 ..\output\main.o: Tim.h
+..\output\main.o: .\fatfs\diskio.h
+..\output\main.o: .\fatfs\integer.h
+..\output\main.o: .\fatfs\ff.h
+..\output\main.o: .\fatfs\ffconf.h

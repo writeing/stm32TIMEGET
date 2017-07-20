@@ -5,8 +5,9 @@
 ..\output\rtc.o: E:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
 ..\output\rtc.o: ..\CMSIS\system_stm32f10x.h
 ..\output\rtc.o: ..\USER\stm32f10x_conf.h
-..\output\rtc.o: ..\FWlib\inc\stm32f10x_bkp.h
+..\output\rtc.o: ..\FWlib\inc\stm32f10x_sdio.h
 ..\output\rtc.o: ..\CMSIS\stm32f10x.h
+..\output\rtc.o: ..\FWlib\inc\stm32f10x_bkp.h
 ..\output\rtc.o: ..\FWlib\inc\stm32f10x_pwr.h
 ..\output\rtc.o: ..\FWlib\inc\stm32f10x_rcc.h
 ..\output\rtc.o: ..\FWlib\inc\stm32f10x_flash.h

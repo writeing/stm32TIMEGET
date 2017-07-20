@@ -54,8 +54,6 @@ void NVIC_Configuration(void)
 }
 
 
-
-
 /*****************USART2*******************************/
 void USART2_Config(void)
 {

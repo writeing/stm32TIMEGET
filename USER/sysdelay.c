@@ -91,7 +91,7 @@ void quePlise()
 		PLT[PLTindex].index = PLTindex;
 		PLTindex++;	
 		PLTindex %= PLTARRAY;
-		while(!GPIO_ReadInputDataBit(GPIOC,GPIO_Pin_4));
+//		while(!GPIO_ReadInputDataBit(GPIOC,GPIO_Pin_4));
 	}			
 	queryPlise = 30;
 	getGPIOflag = 1;			// enable get GPIO

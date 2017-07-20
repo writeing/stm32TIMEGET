@@ -231,19 +231,19 @@ void TIM2_IRQHandler(void)
 //				// usart data come and pps don't  timer 
 //				GPSBaseTime++;
 //			}
-			TimingDelay++;	
-			DelayUsTime = 0;//每次进入 清空us计时器  
-			if(TimingDelay > 1010)	
-			{				
-				//如果ms高于1000 之后 开始启用RTC时钟
-				Time_Adjust(NowTime);				//先设置基准时间
-				Time_GetValue(RTC_GetCounter()+1);				//再把数据取出来，+1s
-				Time_Adjust(getTMforRTC());
-				RTC_ENABLE();				//使能RTC中断
-				RTCEnableFlag = 1;	
-//				GPSBaseTimeFlag = 0;	//关闭时间补差，
-				updateBaseTime = 0;  //PPS时间无效
-			}			
+//			TimingDelay++;	
+//			DelayUsTime = 0;//每次进入 清空us计时器  
+//			if(TimingDelay > 1010)	
+//			{				
+//				//如果ms高于1000 之后 开始启用RTC时钟
+//				Time_Adjust(NowTime);				//先设置基准时间
+//				Time_GetValue(RTC_GetCounter()+1);				//再把数据取出来，+1s
+//				Time_Adjust(getTMforRTC());
+//				RTC_ENABLE();				//使能RTC中断
+//				RTCEnableFlag = 1;	
+////				GPSBaseTimeFlag = 0;	//关闭时间补差，
+//				updateBaseTime = 0;  //PPS时间无效
+//			}			
 
 			//GPIO_WriteBit(GPIOA,GPIO_Pin_7,(BitAction)(1 - GPIO_ReadOutputDataBit(GPIOA,GPIO_Pin_7)));
 	}	
@@ -264,7 +264,7 @@ void USART1_IRQHandler()
 					index = 0;
 //					printf("%s\r\n",c);    //将接受到的数据直接返回打印
 					memset((char *)c,'\0',sizeof(c));				
-					Readflash();
+//					Readflash();
 					for(int i = 1;i < PLTindex ;i++)
 					{
 						strftime(buff,sizeof(buff),"wxc:%Y-%m-%d %H:%M:%S",&PLT[i].time);					
@@ -277,8 +277,8 @@ void USART1_IRQHandler()
 					index = 0;
 					memset((char *)c,'\0',sizeof(c));	
 					
-					count = 0;
-					StartAddress = 0x08037000;
+//					count = 0;
+//					StartAddress = 0x08037000;
 					memset(PLT,0,sizeof(PLT));
 					PLTindex = 1;
 				}
@@ -450,8 +450,12 @@ void RTC_IRQHandler(void)
   */
 /*void PPP_IRQHandler(void)
 {
-}*/
-
+}*/ 
+void SDIO_IRQHandler(void)
+{
+  /* Process All SDIO Interrupt Sources */
+  SD_ProcessIRQSrc();
+} 
 /**
   * @}
   */ 

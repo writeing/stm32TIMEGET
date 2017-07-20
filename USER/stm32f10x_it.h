@@ -35,6 +35,7 @@
 #include "usrtConfig.h"
 #include "RTC.h"
 #include "sysdelay.h"
+#include "stm32_eval_sdio_sd.h"
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/

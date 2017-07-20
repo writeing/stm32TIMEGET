@@ -5,8 +5,9 @@
 ..\output\sysdelay.o: E:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
 ..\output\sysdelay.o: ..\CMSIS\system_stm32f10x.h
 ..\output\sysdelay.o: ..\USER\stm32f10x_conf.h
-..\output\sysdelay.o: ..\FWlib\inc\stm32f10x_bkp.h
+..\output\sysdelay.o: ..\FWlib\inc\stm32f10x_sdio.h
 ..\output\sysdelay.o: ..\CMSIS\stm32f10x.h
+..\output\sysdelay.o: ..\FWlib\inc\stm32f10x_bkp.h
 ..\output\sysdelay.o: ..\FWlib\inc\stm32f10x_pwr.h
 ..\output\sysdelay.o: ..\FWlib\inc\stm32f10x_rcc.h
 ..\output\sysdelay.o: ..\FWlib\inc\stm32f10x_flash.h
@@ -25,3 +26,7 @@
 ..\output\sysdelay.o: E:\keil5\ARM\ARMCC\Bin\..\include\string.h
 ..\output\sysdelay.o: RTC.h
 ..\output\sysdelay.o: sysdelay.h
+..\output\sysdelay.o: .\Utilities\STM32_EVAL\Common\stm32_eval_sdio_sd.h
+..\output\sysdelay.o: .\Utilities\STM32_EVAL\stm32_eval.h
+..\output\sysdelay.o: .\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.h
+..\output\sysdelay.o: .\Utilities\STM32_EVAL\stm32_eval.h

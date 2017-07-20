@@ -48,6 +48,7 @@
 #include "stm32f10x_usart.h"
 #include "stm32f10x_wwdg.h"
 */
+#include "stm32f10x_sdio.h"
 #include "stm32f10x_bkp.h"
 #include "stm32f10x_pwr.h"
 #include "stm32f10x_rcc.h"
